@@ -1,0 +1,8 @@
+[package]
+name = "gsquire"
+version = "0.1.0"
+authors = ["Jacob Kiesel <jake@plasmagames.net>"]
+
+[dependencies]
+discord = "0.7.0"
+chrono = "0.2"

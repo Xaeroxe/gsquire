@@ -1,0 +1,8 @@
+WARNING CHANNEL DELETION IMMINENT!
+
+This channel has been inactive for 6 days and is not permanent.
+
+On the 7th day of inactivity this channel will be deleted.
+
+To prevent this fate either use the channel or mark it permanent by placing a - character at the end of its name.
+i.e. "off_topic" would become "off_topic-"
