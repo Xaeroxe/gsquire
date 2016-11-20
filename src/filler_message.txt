@@ -1,0 +1,3 @@
+Hi!  I'm gsquire the bot.  I maintain channels here.
+
+Unfortunately I can't tell how old a channel is if there are no messages in it.  So I'm creating the first message on this channel since I didn't see any when I got here.
