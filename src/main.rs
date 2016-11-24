@@ -13,15 +13,16 @@ fn main() {
 		include_str!("bot_key.txt").trim()
 	).expect("Login failed.");
 
-	let (mut connection, ready_event) = discord.connect().expect("Websocket login failed.");
+	let (connection, ready_event) = discord.connect().expect("Websocket login failed.");
 	let mut state = State::new(ready_event);
+	connection.set_game_name(String::from("Your mom."));
 	for server in discord.get_servers().expect("Getting servers failed") {
 		channel_management::clear_old_channels(&discord, &server);
 	}
-	//birthday_management::collect_birthdays(&mut discord, &mut connection, &mut state);
-	//let shutdown_result = connection.shutdown();
-	//if shutdown_result.is_err() {
-	//	println!("Failed to disconnect from server.  Error: {:?}", shutdown_result.err().unwrap());
-	//}
+	//birthday_management::collect_birthdays(&mut discord, &mut state);
+	let shutdown_result = connection.shutdown();
+	if let Err(err) = shutdown_result {
+		println!("Failed to disconnect from server.  Error: {:?}", err);
+	}
 	println!("Job finished.");
 }
