@@ -105,7 +105,7 @@ fn get_warning(discord : &Discord, channel : &PublicChannel) -> Option<Message> 
 		else {
 			println!("Got most recent message.  Checking if warning.");
 			let last_msg = last_msg_vec[0].clone();
-			if last_msg.author.id == ME && last_msg.content.starts_with("WARNING CHANNEL DELETION IMMINENT!") {
+			if message_is_warning(&last_msg) {
 				return Some(last_msg);
 			}
 			else {
@@ -113,6 +113,10 @@ fn get_warning(discord : &Discord, channel : &PublicChannel) -> Option<Message> 
 			}
 		}
 	}
+}
+
+fn message_is_warning(message : &Message) -> bool {
+	message.author.id == ME && message.content.starts_with("WARNING CHANNEL DELETION IMMINENT!")
 }
 
 fn get_channel_inactive_duration(discord : &Discord, channel : &PublicChannel) -> Duration {
@@ -140,7 +144,8 @@ fn get_channel_inactive_duration(discord : &Discord, channel : &PublicChannel) -
 		else {
 			println!("Got most recent message..");
 			let mut best_msg = last_msg_vec[0].clone();
-			let last_msg = best_msg.clone();
+			let mut last_is_warning = message_is_warning(&best_msg);
+			let mut last_msg = best_msg.clone();
 			// If this was sent by gsquire try and find one that isn't.
 			'search : while best_msg.author.id == ME {
 				println!("Message id {} is from me, getting the one before it.", best_msg.id);
@@ -162,6 +167,16 @@ fn get_channel_inactive_duration(discord : &Discord, channel : &PublicChannel) -
 					}
 					else {
 						best_msg = msg_query_vec[0].clone();
+						// In the event that gsquire is the only sender on this channel gsquire
+						// should not use its own warning message to determine the age of the channel.
+						// Otherwise gsquire will continue warning indefinitely but never actually
+						// delete the channel.  This channel will likely contain a filler message
+						// posted by gsquire for the purpose of determining channel age.
+						// This code will likely grab that filler message.
+						if last_is_warning && !message_is_warning(&best_msg) {
+							last_msg = best_msg.clone();
+							last_is_warning = false;
+						}
 					}
 				}
 			}
