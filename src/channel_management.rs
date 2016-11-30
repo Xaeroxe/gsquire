@@ -21,6 +21,7 @@ pub fn clear_old_channels(discord : &Discord, server: &ServerInfo) {
 			}
 			else {
 				println!("Found permanent channel: {}", channel.name);
+				println!("\tSkipping.");
 			}
 		}
 	}
