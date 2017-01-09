@@ -68,7 +68,7 @@ fn process_temp_text_channel(discord : &Discord, channel : &PublicChannel) {
 				}
 				//22 is intentional here as exactly 24 hours almost never happens.
 				if (Local::now() - msg_time).num_hours() >= 22 {
-					println!("Message is 7 days old, and no warning found.  Deleting channel.");
+					println!("Warning found and it is at least 22 hours old.  Deleting channel.");
 					let result = discord.delete_channel(&channel.id);
 					if result.is_err() {
 						println!("Failed to delete channel: {}", channel.name);
