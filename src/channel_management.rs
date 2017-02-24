@@ -43,11 +43,10 @@ fn process_temp_channel(discord : &Discord, channel : &PublicChannel) {
 
 fn process_temp_text_channel(discord : &Discord, channel : &PublicChannel) {
 	let days_old = get_channel_inactive_duration(discord, channel).num_days();
-	//If the message is 5 days old then send a warning.
-	if days_old == 5 {
+	if days_old == 6 {
 		send_delete_warning(discord, &channel.id);
 	}
-	else if days_old >= 6 {
+	else if days_old >= 7 {
 		// Never delete a channel on which a warning hasn't been sent.
 		match get_warning(discord, channel) {
 			Some(warning) => {
