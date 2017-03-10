@@ -1,6 +1,8 @@
 use discord::{Discord, GetMessages};
 use discord::model::{ChannelType, UserId, ServerInfo, ChannelId, PublicChannel, Message};
 use chrono::Duration;
+use chrono::Weekday;
+use chrono::Datelike;
 use chrono::datetime::DateTime;
 use chrono::offset::local::Local;
 use chrono::offset::fixed::FixedOffset;
@@ -23,6 +25,30 @@ pub fn clear_old_channels(discord : &Discord, server: &ServerInfo) {
 				println!("Found permanent channel: {}", channel.name);
 				println!("\tSkipping.");
 			}
+		}
+	}
+}
+
+pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
+    println!("Is it wednesday my dudes? : {}", server.name);
+	let channels_query = discord.get_server_channels(server.id);
+	if let Err(err) = channels_query {
+		println!("Error when retrieving channels: {:?}", err);
+	}
+	else {
+		for channel in channels_query.unwrap() {
+            if channel.name == "announcements-" && Local::now().weekday() == Weekday::Wed {
+                println!("It's wednesday my dudes!");
+                let result = discord.send_message(
+                    &channel.id,
+                    "https://youtu.be/du-TY1GUFGk",
+                    "",
+                    false
+                );
+                if result.is_err() {
+                    println!("Failed to send wednesday message to channel: {}", &channel.id);
+                }
+            }
 		}
 	}
 }
