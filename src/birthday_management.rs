@@ -8,9 +8,9 @@ use chrono::NaiveDate;
 use chrono::offset::local::Local;
 use chrono::Datelike;
 
-const USER_FILE_PATH : &'static str = include_str!("user_file_path.txt");
+const USER_FILE_PATH: &'static str = include_str!("user_file_path.txt");
 
-pub fn collect_birthdays(discord : &mut Discord, state : &mut State) {
+pub fn collect_birthdays(discord: &mut Discord, state: &mut State) {
     let known_birthdays = load_user_file();
     for server in state.servers() {
         for member in &server.members {
@@ -25,20 +25,19 @@ pub fn collect_birthdays(discord : &mut Discord, state : &mut State) {
             if let Err(err) = pm_result {
                 println!("Unable to pm user: {}.  Skipping.", user.name);
                 continue;
-            }
-            else {
+            } else {
                 let pm = pm_result.unwrap();
 
             }
-            //In our user file a birthday of 0/0 indicates we have introduced ourself to the user
-            //but do not know their birthday yet.
+            // In our user file a birthday of 0/0 indicates we have introduced ourself to the user
+            // but do not know their birthday yet.
         }
     }
 }
 
 // Get the next date for which it is month and day.
 // i.e. if today is 11/24/16 and my birthday is on June 20th this should return 06/20/17
-fn get_next_birthday_date(month : u8, day : u8) -> Option<NaiveDate> {
+fn get_next_birthday_date(month: u8, day: u8) -> Option<NaiveDate> {
     if month == 0 || day == 0 {
         return None;
     }
@@ -47,10 +46,9 @@ fn get_next_birthday_date(month : u8, day : u8) -> Option<NaiveDate> {
     let result;
     // Leap day in a non-leap year.
     if month == 2 && day == 29 && current_year % 4 != 0 {
-        //Bump the day back 1 so it's valid.
+        // Bump the day back 1 so it's valid.
         result = NaiveDate::from_ymd_opt(current_year, 2, 28);
-    }
-    else {
+    } else {
         result = NaiveDate::from_ymd_opt(current_year, month as u32, day as u32);
     }
     if let None = result {
@@ -58,7 +56,7 @@ fn get_next_birthday_date(month : u8, day : u8) -> Option<NaiveDate> {
         return None;
     }
     if let Some(mut date) = result {
-        //We're about to advance the year.
+        // We're about to advance the year.
         if date < now {
             // Leap day handling.
             // Leap day is valid this year but won't be next year, so take the day back 1
@@ -76,25 +74,25 @@ fn get_next_birthday_date(month : u8, day : u8) -> Option<NaiveDate> {
                 return new_date;
             }
             if new_date.is_none() {
-                println!("Year out of range: {}", current_year+1);
+                println!("Year out of range: {}", current_year + 1);
                 println!("261,954 years of service.  Yeah baby!");
                 println!("P.S. sorry about the crash future boy/girl/alien/robot.");
-                println!("Probably shouldn't have used code that hadn't been maintained for over 200,000 years though.");
+                println!("Probably shouldn't have used code that hadn't been maintained for over \
+                          200,000 years though.");
                 return None;
             }
-        }
-        else {
+        } else {
             return Some(date);
         }
     }
-    //Unreachable.
+    // Unreachable.
     return None;
 }
 
 struct UserBirthday {
-    user : UserId,
-    month : u8,
-    day : u8,
+    user: UserId,
+    month: u8,
+    day: u8,
 }
 
 fn load_user_file() -> Vec<UserBirthday> {
@@ -105,7 +103,7 @@ fn load_user_file() -> Vec<UserBirthday> {
             let mut buf = String::new();
             file.read_to_string(&mut buf);
             let lines = buf.split('\n');
-            'lines : for line in lines {
+            'lines: for line in lines {
                 let values = line.split(' ').collect::<Vec<&str>>();
                 if values.len() >= 2 {
                     let user_num = u64::from_str(values[0]);
@@ -125,17 +123,15 @@ fn load_user_file() -> Vec<UserBirthday> {
                             println!("Unable to parse day, skipping. Error: {:?}", err);
                             continue 'lines;
                         }
-                        to_return.push(UserBirthday{
-                            user : UserId(user_num.unwrap()),
-                            month : month_num.unwrap(),
-                            day : day_num.unwrap()
+                        to_return.push(UserBirthday {
+                            user: UserId(user_num.unwrap()),
+                            month: month_num.unwrap(),
+                            day: day_num.unwrap(),
                         });
-                    }
-                    else {
+                    } else {
                         println!("Unable to parse line, no / found. Line: {:?}", line);
                     }
-                }
-                else {
+                } else {
                     println!("Unable to parse line, no space found. Line: {:?}", line);
                 }
             }
@@ -147,7 +143,7 @@ fn load_user_file() -> Vec<UserBirthday> {
     to_return
 }
 
-fn write_user_file(birthdays : &Vec<UserBirthday>) {
+fn write_user_file(birthdays: &Vec<UserBirthday>) {
     let result = File::create(Path::new(USER_FILE_PATH.trim()));
     match result {
         Ok(mut file) => {
@@ -156,8 +152,7 @@ fn write_user_file(birthdays : &Vec<UserBirthday>) {
             for birthday in birthdays {
                 if first_line {
                     first_line = false;
-                }
-                else {
+                } else {
                     buf.push('\n');
                 }
                 buf.push_str(format!("{}", birthday.user).as_str());
@@ -168,7 +163,8 @@ fn write_user_file(birthdays : &Vec<UserBirthday>) {
             }
             let write_result = file.write_all(buf.as_bytes());
             if write_result.is_err() {
-                println!("Failed to write user file: {:?}", write_result.err().unwrap());
+                println!("Failed to write user file: {:?}",
+                         write_result.err().unwrap());
             }
         }
         Err(err) => {
