@@ -34,7 +34,8 @@ pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
         if let Err(err) = channels_query {
             println!("Error when retrieving channels: {:?}", err);
         } else {
-            let channel = channels_query.unwrap().iter().filter(|c| c.name == "announcements-").nth(0);
+            let channels_query = channels_query.unwrap();
+            let channel = channels_query.iter().filter(|c| c.name == "announcements-").nth(0);
             if let Some(channel) = channel {
                println!("It's wednesday my dudes!");
                 let result =
