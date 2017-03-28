@@ -18,6 +18,7 @@ fn main() {
     for server in discord.get_servers().expect("Getting servers failed") {
         channel_management::clear_old_channels(&discord, &server);
         channel_management::it_is_wednesday_my_dudes(&discord, &server);
+	channel_management::april_fools(&discord, &server);
     }
     // birthday_management::collect_birthdays(&mut discord, &mut state);
     let shutdown_result = connection.shutdown();

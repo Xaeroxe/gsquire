@@ -1,11 +1,13 @@
 use discord::{Discord, GetMessages};
 use discord::model::{ChannelType, UserId, ServerInfo, ChannelId, PublicChannel, Message};
 use chrono::Duration;
+use std::time::Duration as StdDuration;
 use chrono::Weekday;
 use chrono::Datelike;
 use chrono::datetime::DateTime;
 use chrono::offset::local::Local;
 use chrono::offset::fixed::FixedOffset;
+use std::thread::sleep;
 
 const ME: UserId = UserId(include!("bot_id.txt"));
 
@@ -49,6 +51,71 @@ pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
             }
         }
     }
+}
+
+pub fn april_fools(discord: &Discord, server: &ServerInfo) {
+	let now = Local::now();
+	if now.month() == 4 && now.day() == 1 {
+		let channels_query = discord.get_server_channels(server.id);
+		if let Err(err) = channels_query {
+		    println!("Error when retrieving channels: {:?}", err);
+		} else {
+		    let channels_query = channels_query.unwrap()
+		    for channel in channels_query {
+			let result =
+			    discord.send_message(&channel.id, "Channel deletion in 5...", "", false);
+			if result.is_err() {
+			    println!("Failed to send message to channel: {}",
+				     &channel.id);
+			}
+		    }
+		    sleep(StdDuration::new(1, 0));
+		    for channel in channels_query {
+			    let result =
+				discord.send_message(&channel.id, "4...", "", false);
+			    if result.is_err() {
+				println!("Failed to send message to channel: {}",
+					 &channel.id);
+			    }
+		    }
+                    sleep(StdDuration::new(1, 0));
+		    for channel in channels_query {
+			    let result =
+				discord.send_message(&channel.id, "3...", "", false);
+			    if result.is_err() {
+				println!("Failed to send message to channel: {}",
+					 &channel.id);
+			    }
+		    }
+		    sleep(StdDuration::new(1, 0));
+		    for channel in channels_query {
+			    let result =
+				discord.send_message(&channel.id, "2...", "", false);
+			    if result.is_err() {
+				println!("Failed to send message to channel: {}",
+					 &channel.id);
+			    }
+		    }
+ 		    sleep(StdDuration::new(1, 0));
+		    for channel in channels_query {
+			    let result =
+				discord.send_message(&channel.id, "1...", "", false);
+			    if result.is_err() {
+				println!("Failed to send message to channel: {}",
+					 &channel.id);
+			    }
+		    }
+		    sleep(StdDuration::new(3, 0));
+		    for channel in channels_query {
+			    let result =
+				discord.send_message(&channel.id, "April fools!!", "", false);
+			    if result.is_err() {
+				println!("Failed to send message to channel: {}",
+					 &channel.id);
+			    }
+		    }
+		}
+	}
 }
 
 fn channel_is_temp(channel: &PublicChannel) -> bool {
