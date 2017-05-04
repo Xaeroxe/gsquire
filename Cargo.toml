@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Jacob Kiesel <jake@plasmagames.net>"]
 
 [dependencies]
-discord = "0.7.0"
-chrono = "0.2"
+discord = "0.8.0"
+chrono = "0.3"
