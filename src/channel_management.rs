@@ -41,7 +41,7 @@ pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
             if let Some(channel) = channel {
                println!("It's wednesday my dudes!");
                 let result =
-                    discord.send_message(&channel.id, "https://youtu.be/du-TY1GUFGk", "", false);
+                    discord.send_message(channel.id, "https://youtu.be/du-TY1GUFGk", "", false);
                 if result.is_err() {
                     println!("Failed to send wednesday message to channel: {}",
                              &channel.id);
@@ -69,7 +69,7 @@ fn process_temp_channel(discord: &Discord, channel: &PublicChannel) {
 fn process_temp_text_channel(discord: &Discord, channel: &PublicChannel) {
     let days_old = get_channel_inactive_duration(discord, channel).num_days();
     if days_old == 6 {
-        send_delete_warning(discord, &channel.id);
+        send_delete_warning(discord, channel.id);
     } else if days_old >= 7 {
         // Never delete a channel on which a warning hasn't been sent.
         match get_warning(discord, channel) {
@@ -86,13 +86,13 @@ fn process_temp_text_channel(discord: &Discord, channel: &PublicChannel) {
                         // how old it is.  The only thing we can do is send another
                         // and hope this one turns out better than the last one.
                         msg_time = Local::now().with_timezone(&FixedOffset::east(0));
-                        send_delete_warning(discord, &channel.id);
+                        send_delete_warning(discord, channel.id);
                     }
                 }
                 // 22 is intentional here as exactly 24 hours almost never happens.
-                if (Local::now() - msg_time).num_hours() >= 22 {
+                if (Local::now().signed_duration_since(msg_time)).num_hours() >= 22 {
                     println!("Warning found and it is at least 22 hours old.  Deleting channel.");
-                    let result = discord.delete_channel(&channel.id);
+                    let result = discord.delete_channel(channel.id);
                     if result.is_err() {
                         println!("Failed to delete channel: {}", channel.name);
                     }
@@ -101,7 +101,7 @@ fn process_temp_text_channel(discord: &Discord, channel: &PublicChannel) {
             }
             None => {
                 println!("Would normally delete this now but no warning has been sent.");
-                send_delete_warning(discord, &channel.id);
+                send_delete_warning(discord, channel.id);
             }
         }
     }
@@ -111,13 +111,13 @@ fn get_warning(discord: &Discord, channel: &PublicChannel) -> Option<Message> {
     let last_msg_query = discord.get_messages(channel.id, GetMessages::MostRecent, Some(1));
     if let Err(err) = last_msg_query {
         println!("Error retrieving most recent message: {:?}", err);
-        send_filler_message(discord, &channel.id);
+        send_filler_message(discord, channel.id);
         return None;
     } else {
         let last_msg_vec = last_msg_query.unwrap();
         if last_msg_vec.len() == 0 {
             println!("No messages found in channel.  Posting one.");
-            send_filler_message(discord, &channel.id);
+            send_filler_message(discord, channel.id);
             return None;
         } else {
             println!("Got most recent message.  Checking if warning.");
@@ -143,13 +143,13 @@ fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> 
     if let Err(err) = last_msg_query {
         println!("Error retrieving most recent message posting one.: {:?}",
                  err);
-        send_filler_message(discord, &channel.id);
+        send_filler_message(discord, channel.id);
         return Duration::days(0);
     } else {
         let last_msg_vec = last_msg_query.unwrap();
         if last_msg_vec.len() == 0 {
             println!("No messages found in channel.  Posting one.");
-            send_filler_message(discord, &channel.id);
+            send_filler_message(discord, channel.id);
             return Duration::days(0);
         } else {
             println!("Got most recent message..");
@@ -205,12 +205,12 @@ fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> 
                 }
             }
             println!("Timestamp of message being evaluated is: {}", msg_time);
-            return Local::now() - msg_time;
+            return Local::now().signed_duration_since(msg_time);
         }
     }
 }
 
-fn send_filler_message(discord: &Discord, channel_id: &ChannelId) {
+fn send_filler_message(discord: &Discord, channel_id: ChannelId) {
     println!("Sending filler message.");
     let result = discord.send_message(channel_id, include_str!("filler_message.txt"), "", false);
     if result.is_err() {
@@ -218,7 +218,7 @@ fn send_filler_message(discord: &Discord, channel_id: &ChannelId) {
     }
 }
 
-fn send_delete_warning(discord: &Discord, channel_id: &ChannelId) {
+fn send_delete_warning(discord: &Discord, channel_id: ChannelId) {
     println!("Sending warning message.");
     let result = discord.send_message(channel_id, include_str!("delete_warning.txt"), "", false);
     if result.is_err() {

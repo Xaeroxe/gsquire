@@ -21,7 +21,7 @@ pub fn collect_birthdays(discord: &mut Discord, state: &mut State) {
                     user_birthday = get_next_birthday_date(birthday.month, birthday.day);
                 }
             }
-            let pm_result = discord.create_private_channel(&user.id);
+            let pm_result = discord.create_private_channel(user.id);
             if let Err(err) = pm_result {
                 println!("Unable to pm user: {}.  Skipping.", user.name);
                 continue;
