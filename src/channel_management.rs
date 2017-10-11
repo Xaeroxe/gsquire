@@ -4,9 +4,9 @@ use chrono::Duration;
 use std::time::Duration as StdDuration;
 use chrono::Weekday;
 use chrono::Datelike;
-use chrono::datetime::DateTime;
-use chrono::offset::local::Local;
-use chrono::offset::fixed::FixedOffset;
+use chrono::DateTime;
+use chrono::offset::Local;
+use chrono::offset::FixedOffset;
 use std::thread::sleep;
 
 const ME: UserId = UserId(include!("bot_id.txt"));
@@ -47,7 +47,7 @@ pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
                              &channel.id);
                 }
             } else {
-                println!("announcements- not found.");   
+                println!("announcements- not found.");
             }
         }
     }
@@ -74,23 +74,8 @@ fn process_temp_text_channel(discord: &Discord, channel: &PublicChannel) {
         // Never delete a channel on which a warning hasn't been sent.
         match get_warning(discord, channel) {
             Some(warning) => {
-                let msg_time;
-                match DateTime::<FixedOffset>::parse_from_rfc3339(&warning.timestamp) {
-                    Ok(timestamp) => {
-                        msg_time = timestamp;
-                    }
-                    Err(err) => {
-                        println!("Could not parse warning timestamp: {}", channel.name);
-                        println!("Error: {:?}", err);
-                        // This is a SOL scenario.  We found a warning but can't tell
-                        // how old it is.  The only thing we can do is send another
-                        // and hope this one turns out better than the last one.
-                        msg_time = Local::now().with_timezone(&FixedOffset::east(0));
-                        send_delete_warning(discord, channel.id);
-                    }
-                }
                 // 22 is intentional here as exactly 24 hours almost never happens.
-                if (Local::now().signed_duration_since(msg_time)).num_hours() >= 22 {
+                if (Local::now().signed_duration_since(warning.timestamp)).num_hours() >= 22 {
                     println!("Warning found and it is at least 22 hours old.  Deleting channel.");
                     let result = discord.delete_channel(channel.id);
                     if result.is_err() {
@@ -193,19 +178,8 @@ fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> 
                 best_msg = last_msg;
             }
             println!("Found good message, proceeding.");
-            let msg_time;
-            match DateTime::<FixedOffset>::parse_from_rfc3339(&best_msg.timestamp) {
-                Ok(timestamp) => {
-                    msg_time = timestamp;
-                }
-                Err(err) => {
-                    println!("Could not parse timestamp from channel: {}", channel.name);
-                    println!("Error: {:?}", err);
-                    return Duration::days(0);
-                }
-            }
-            println!("Timestamp of message being evaluated is: {}", msg_time);
-            return Local::now().signed_duration_since(msg_time);
+            println!("Timestamp of message being evaluated is: {}", best_msg.timestamp);
+            return Local::now().signed_duration_since(best_msg.timestamp);
         }
     }
 }

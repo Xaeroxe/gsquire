@@ -1,8 +1,8 @@
 [package]
 name = "gsquire"
 version = "0.1.0"
-authors = ["Jacob Kiesel <jake@plasmagames.net>"]
+authors = ["Jacob Kiesel <kieseljake@gmail.com>"]
 
 [dependencies]
-discord = "0.8.0"
-chrono = "0.3"
+discord = { git = "https://github.com/SpaceManiac/discord-rs", rev = "7d475fa" }
+chrono = { version = "0.4", features = ["serde"] }

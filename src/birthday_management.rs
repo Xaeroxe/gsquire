@@ -5,7 +5,7 @@ use std::path::Path;
 use std::io::{Read, Write};
 use std::str::FromStr;
 use chrono::NaiveDate;
-use chrono::offset::local::Local;
+use chrono::offset::Local;
 use chrono::Datelike;
 
 const USER_FILE_PATH: &'static str = include_str!("user_file_path.txt");
