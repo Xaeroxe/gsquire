@@ -1,13 +1,7 @@
-use chrono::offset::FixedOffset;
 use chrono::offset::Local;
-use chrono::DateTime;
-use chrono::Datelike;
 use chrono::Duration;
-use chrono::Weekday;
 use discord::model::{ChannelId, ChannelType, Message, PublicChannel, ServerInfo, UserId};
 use discord::{Discord, GetMessages};
-use std::thread::sleep;
-use std::time::Duration as StdDuration;
 
 const ME: UserId = UserId(include!("bot_id.txt"));
 
