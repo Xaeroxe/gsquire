@@ -34,11 +34,9 @@ pub fn clear_old_channels(discord: &Discord, server: &ServerInfo) {
 }
 
 fn process_temp_channel(discord: &Discord, channel: &PublicChannel) {
+    println!("{} is channel type {:?}.", channel.name, channel.kind);
     if channel.kind == ChannelType::Text {
-        println!("{} is text channel.", channel.name);
         process_temp_text_channel(discord, channel);
-    } else {
-        println!("{} is voice channel.", channel.name);
     }
 }
 

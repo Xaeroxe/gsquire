@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Jacob Kiesel <kieseljake@gmail.com>"]
 
 [dependencies]
-discord = { git = "https://github.com/SpaceManiac/discord-rs", rev = "c6d89e5" }
+discord = { git = "https://github.com/tinaun/discord-rs", rev = "5167a3f" }
 chrono = { version = "0.4", features = ["serde"] }

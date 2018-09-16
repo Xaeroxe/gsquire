@@ -1,7 +1,7 @@
 extern crate chrono;
 extern crate discord;
 
-use discord::Discord;
+use discord::{Discord, State};
 
 mod channel_management;
 
@@ -10,7 +10,8 @@ fn main() {
     let discord =
         Discord::from_bot_token(include_str!("bot_key.txt").trim()).expect("Login failed.");
 
-    let (connection, _ready_event) = discord.connect().expect("Websocket login failed.");
+    let (connection, ready_event) = discord.connect().expect("Websocket login failed.");
+    let _state = State::new(ready_event);
     connection.set_game_name(String::from("Your mom."));
     for server in discord.get_servers().expect("Getting servers failed") {
         channel_management::clear_old_channels(&discord, &server);
