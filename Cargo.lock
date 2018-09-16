@@ -1,11 +1,3 @@
-[root]
-name = "gsquire"
-version = "0.1.0"
-dependencies = [
- "chrono 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "discord 0.8.0 (git+https://github.com/SpaceManiac/discord-rs?rev=7d475fa)",
-]
-
 [[package]]
 name = "base64-rs"
 version = "0.1.1"
@@ -50,7 +42,7 @@ dependencies = [
 [[package]]
 name = "discord"
 version = "0.8.0"
-source = "git+https://github.com/SpaceManiac/discord-rs?rev=7d475fa#7d475fa9868a2b4da504a4774d0ea771b393ea3f"
+source = "git+https://github.com/SpaceManiac/discord-rs?rev=c6d89e5#c6d89e5863341964017adb49c09d8637da162786"
 dependencies = [
  "base64-rs 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -94,6 +86,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi-build 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "gsquire"
+version = "0.1.0"
+dependencies = [
+ "chrono 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "discord 0.8.0 (git+https://github.com/SpaceManiac/discord-rs?rev=c6d89e5)",
 ]
 
 [[package]]
@@ -646,7 +646,7 @@ dependencies = [
 "checksum cfg-if 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "de1e760d7b6535af4241fca8bd8adf68e2e7edacc6b29f5d399050c5e48cf88c"
 "checksum chrono 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7c20ebe0b2b08b0aeddba49c609fe7957ba2e33449882cb186a180bc60682fa9"
 "checksum cookie 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "0e3d6405328b6edb412158b3b7710e2634e23f3614b9bb1c412df7952489a626"
-"checksum discord 0.8.0 (git+https://github.com/SpaceManiac/discord-rs?rev=7d475fa)" = "<none>"
+"checksum discord 0.8.0 (git+https://github.com/SpaceManiac/discord-rs?rev=c6d89e5)" = "<none>"
 "checksum dtoa 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "09c3753c3db574d215cba4ea76018483895d7bff25a31b49ba45db21c48e50ab"
 "checksum flate2 0.2.19 (registry+https://github.com/rust-lang/crates.io-index)" = "36df0166e856739905cd3d7e0b210fe818592211a008862599845e012d8d304c"
 "checksum gcc 0.3.45 (registry+https://github.com/rust-lang/crates.io-index)" = "40899336fb50db0c78710f53e87afc54d8c7266fb76262fecc78ca1a7f09deae"

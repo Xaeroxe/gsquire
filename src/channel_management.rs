@@ -1,60 +1,42 @@
-use discord::{Discord, GetMessages};
-use discord::model::{ChannelType, UserId, ServerInfo, ChannelId, PublicChannel, Message};
-use chrono::Duration;
-use std::time::Duration as StdDuration;
-use chrono::Weekday;
-use chrono::Datelike;
-use chrono::DateTime;
-use chrono::offset::Local;
 use chrono::offset::FixedOffset;
+use chrono::offset::Local;
+use chrono::DateTime;
+use chrono::Datelike;
+use chrono::Duration;
+use chrono::Weekday;
+use discord::model::{ChannelId, ChannelType, Message, PublicChannel, ServerInfo, UserId};
+use discord::{Discord, GetMessages};
 use std::thread::sleep;
+use std::time::Duration as StdDuration;
 
 const ME: UserId = UserId(include!("bot_id.txt"));
 
 pub fn clear_old_channels(discord: &Discord, server: &ServerInfo) {
     println!("Clearing old channels on server: {}", server.name);
     let channels_query = discord.get_server_channels(server.id);
-    if let Err(err) = channels_query {
-        println!("Error when retrieving channels: {:?}", err);
-    } else {
-        for channel in channels_query.unwrap() {
-            if channel_is_temp(&channel) {
-                println!("Found temporary channel: {}", channel.name);
-                process_temp_channel(discord, &channel);
-            } else {
-                println!("Found permanent channel: {}", channel.name);
-                println!("\tSkipping.");
-            }
-        }
-    }
-}
-
-pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
-    println!("Is it wednesday my dudes? : {}", server.name);
-    if Local::now().weekday() == Weekday::Wed {
-        let channels_query = discord.get_server_channels(server.id);
-        if let Err(err) = channels_query {
+    match channels_query {
+        Err(err) => {
             println!("Error when retrieving channels: {:?}", err);
-        } else {
-            let channels_query = channels_query.unwrap();
-            let channel = channels_query.iter().filter(|c| c.name == "announcements-").nth(0);
-            if let Some(channel) = channel {
-               println!("It's wednesday my dudes!");
-                let result =
-                    discord.send_message(channel.id, "https://youtu.be/du-TY1GUFGk", "", false);
-                if result.is_err() {
-                    println!("Failed to send wednesday message to channel: {}",
-                             &channel.id);
+        }
+        Ok(channels) => {
+            let permanent_category = channels
+                .iter()
+                .filter(|c| {
+                    c.kind == ChannelType::Category && c.name.to_lowercase().contains("permanent")
+                }).next()
+                .expect("No permanent category found, crashing.")
+                .id;
+            for channel in &channels {
+                if channel.parent_id != Some(permanent_category) {
+                    println!("Found temporary channel: {}", channel.name);
+                    process_temp_channel(discord, channel);
+                } else {
+                    println!("Found permanent channel: {}", channel.name);
+                    println!("\tSkipping.");
                 }
-            } else {
-                println!("announcements- not found.");
             }
         }
     }
-}
-
-fn channel_is_temp(channel: &PublicChannel) -> bool {
-    !channel.name.ends_with('-')
 }
 
 fn process_temp_channel(discord: &Discord, channel: &PublicChannel) {
@@ -117,7 +99,9 @@ fn get_warning(discord: &Discord, channel: &PublicChannel) -> Option<Message> {
 }
 
 fn message_is_warning(message: &Message) -> bool {
-    message.author.id == ME && message.content.starts_with("WARNING CHANNEL DELETION IMMINENT!")
+    message.author.id == ME && message
+        .content
+        .starts_with("WARNING CHANNEL DELETION IMMINENT!")
 }
 
 fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> Duration {
@@ -126,8 +110,10 @@ fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> 
     // If there are no messages on this channel at all, post one.
     let last_msg_query = discord.get_messages(channel.id, GetMessages::MostRecent, Some(1));
     if let Err(err) = last_msg_query {
-        println!("Error retrieving most recent message posting one.: {:?}",
-                 err);
+        println!(
+            "Error retrieving most recent message posting one.: {:?}",
+            err
+        );
         send_filler_message(discord, channel.id);
         return Duration::days(0);
     } else {
@@ -143,8 +129,10 @@ fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> 
             let mut last_msg = best_msg.clone();
             // If this was sent by gsquire try and find one that isn't.
             'search: while best_msg.author.id == ME {
-                println!("Message id {} is from me, getting the one before it.",
-                         best_msg.id);
+                println!(
+                    "Message id {} is from me, getting the one before it.",
+                    best_msg.id
+                );
                 let msg_query =
                     discord.get_messages(channel.id, GetMessages::Before(best_msg.id), Some(1));
                 if let Err(err) = msg_query {
@@ -178,7 +166,10 @@ fn get_channel_inactive_duration(discord: &Discord, channel: &PublicChannel) -> 
                 best_msg = last_msg;
             }
             println!("Found good message, proceeding.");
-            println!("Timestamp of message being evaluated is: {}", best_msg.timestamp);
+            println!(
+                "Timestamp of message being evaluated is: {}",
+                best_msg.timestamp
+            );
             return Local::now().signed_duration_since(best_msg.timestamp);
         }
     }
