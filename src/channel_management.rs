@@ -1,9 +1,44 @@
 use chrono::offset::Local;
-use chrono::Duration;
+use chrono::{Datelike, Duration, Weekday};
 use discord::model::{ChannelId, ChannelType, Message, PublicChannel, ServerInfo, UserId};
 use discord::{Discord, GetMessages};
 
 const ME: UserId = UserId(include!("bot_id.txt"));
+
+pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
+    println!("Is it wednesday my dudes? : {}", server.name);
+    let now = Local::now();
+    if now.weekday() == Weekday::Wed {
+        match discord.get_server_channels(server.id) {
+            Err(err) => {
+                println!("Error when retrieving channels: {:?}", err);
+            }
+            Ok(channels_query) => {
+                let channel = channels_query
+                    .iter()
+                    .filter(|c| c.name == "announcements")
+                    .nth(0);
+                if let Some(channel) = channel {
+                    println!("It's wednesday my dudes!");
+                    let message = if now.year() == 2018 && now.month() == 9 && now.day() == 19 {
+                        "https://tinyurl.com/y99nxszk"
+                    } else {
+                        "https://tinyurl.com/ybvjxvad"
+                    };
+                    let result = discord.send_message(channel.id, message, "", false);
+                    if result.is_err() {
+                        println!(
+                            "Failed to send wednesday message to channel: {}",
+                            &channel.id
+                        );
+                    }
+                } else {
+                    println!("announcements- not found.");
+                }
+            }
+        }
+    }
+}
 
 pub fn clear_old_channels(discord: &Discord, server: &ServerInfo) {
     println!("Clearing old channels on server: {}", server.name);
