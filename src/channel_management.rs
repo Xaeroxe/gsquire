@@ -2,6 +2,7 @@ use chrono::offset::Local;
 use chrono::{Datelike, Duration, Weekday};
 use discord::model::{ChannelId, ChannelType, Message, PublicChannel, ServerInfo, UserId};
 use discord::{Discord, GetMessages};
+use rand::{thread_rng, Rng};
 
 const ME: UserId = UserId(include!("bot_id.txt"));
 
@@ -20,10 +21,12 @@ pub fn it_is_wednesday_my_dudes(discord: &Discord, server: &ServerInfo) {
                     .nth(0);
                 if let Some(channel) = channel {
                     println!("It's wednesday my dudes!");
-                    let message = if now.year() == 2018 && now.month() == 9 && now.day() == 19 {
-                        "https://tinyurl.com/y99nxszk"
-                    } else {
-                        "https://tinyurl.com/ybvjxvad"
+                    let rand_num = thread_rng().gen_range(0..4);
+                    let message = match rand_num {
+                        0 => "https://tinyurl.com/ybvjxvad",
+                        1 => "https://imgflip.com/i/2isgmb",
+                        2 => "https://i.imgur.com/KS8LM6i_d.jpg",
+                        3 => "https://youtu.be/du-TY1GUFGk",
                     };
                     let result = discord.send_message(channel.id, message, "", false);
                     if result.is_err() {
