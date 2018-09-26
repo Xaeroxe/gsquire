@@ -1,5 +1,6 @@
 extern crate chrono;
 extern crate discord;
+extern crate rand;
 
 use std::thread::sleep;
 use std::time::Duration;
