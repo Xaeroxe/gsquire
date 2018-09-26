@@ -122,6 +122,7 @@ version = "0.1.0"
 dependencies = [
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "discord 0.8.0 (git+https://github.com/tinaun/discord-rs?rev=5167a3f)",
+ "rand 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
